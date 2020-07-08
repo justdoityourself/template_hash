@@ -19,7 +19,7 @@ TEST_CASE("Distribution", "[hash::]")
     using namespace template_hash::polynomial;
 
     static auto constexpr words = 100000;
-    static auto constexpr buckets = 4096;
+    static auto constexpr buckets = 256;
 
     auto hash1 = [](auto word)
     {
@@ -54,6 +54,32 @@ TEST_CASE("Distribution", "[hash::]")
     t2 = high_resolution_clock::now();
 
     std::cout << "2 byte quadratic, deviation:" << std::get<2>(result5) << " in " << (t2.time_since_epoch() - t1.time_since_epoch()).count() / 1000 << std::endl;
+
+
+    auto hash6 = [](auto word)
+    {
+        return general_hash<uint8_t>(word, std::array<uint32_t, 1>{67737});
+    };
+
+    t1 = high_resolution_clock::now();
+    auto result6 = low_high_avg_tar<buckets>(hash6, words);
+    t2 = high_resolution_clock::now();
+
+    std::cout << "4 byte constant, deviation:" << std::get<2>(result6) << " in " << (t2.time_since_epoch() - t1.time_since_epoch()).count() / 1000 << std::endl;
+
+
+    auto hash7 = [](auto word)
+    {
+        return general_hash<uint8_t>(word, std::array<uint16_t, 1>{63737});
+    };
+
+    t1 = high_resolution_clock::now();
+    auto result7 = low_high_avg_tar<buckets>(hash7, words);
+    t2 = high_resolution_clock::now();
+
+    std::cout << "2 byte constant, deviation:" << std::get<2>(result7) << " in " << (t2.time_since_epoch() - t1.time_since_epoch()).count() / 1000 << std::endl;
+
+
 
     auto hash3 = [](auto word)
     {

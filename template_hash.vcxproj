@@ -208,6 +208,9 @@
     <ClInclude Include="hash\polynomial.hpp" />
     <ClInclude Include="hash\test.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
