@@ -45,7 +45,7 @@ namespace template_hash
 					sum += tar-i;
 			}
 
-			return std::make_tuple(low, high, sum / MOD,tar,result);
+			return std::make_tuple(low, high, sum / MOD,tar);
 		}
 	}
 }

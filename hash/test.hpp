@@ -18,8 +18,8 @@ TEST_CASE("Distribution", "[hash::]")
     using namespace template_hash::distribution;
     using namespace template_hash::polynomial;
 
-    static auto constexpr words = 100000;
-    static auto constexpr buckets = 256;
+    static auto constexpr words = 400000;
+    static auto constexpr buckets = 24000;
 
     auto hash1 = [](auto word)
     {
