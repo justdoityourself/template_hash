@@ -229,6 +229,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <StructMemberAlignment>16Bytes</StructMemberAlignment>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -276,10 +277,13 @@
     <ClCompile Include="template_hash.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="hash\avx2_int.hpp" />
     <ClInclude Include="hash\distribution.hpp" />
     <ClInclude Include="hash\english_dictionary.hpp" />
     <ClInclude Include="hash\functions.hpp" />
     <ClInclude Include="hash\polynomial.hpp" />
+    <ClInclude Include="hash\sse_int.hpp" />
+    <ClInclude Include="hash\state.hpp" />
     <ClInclude Include="hash\test.hpp" />
   </ItemGroup>
   <ItemGroup>

@@ -38,10 +38,8 @@ namespace template_hash
 			TODO allow the context to be input so we can resume a blocked hashing process.
 		*/
 
-		template < typename UNIT, typename BLOCK, typename T, size_t COUNT > auto _general_hash(const T& data, const std::array<BLOCK, COUNT>& poly, const std::array<BLOCK, COUNT>& IV = {})
+		template < typename UNIT, typename T, typename BLOCK, size_t COUNT > void _general_hash(const T& data, const std::array<BLOCK, COUNT>& poly, std::array<BLOCK, COUNT> & result,const std::array<BLOCK, COUNT>& IV = {})
 		{
-			std::array<BLOCK, COUNT> result = {};
-
 			UNIT* u = (UNIT*)data.data();
 			size_t limit = data.size() / sizeof(UNIT);
 			size_t tail = data.size() % sizeof(UNIT);
@@ -49,45 +47,29 @@ namespace template_hash
 			UNIT left_over = 0;
 
 			if (tail)
-			{
-				uint8_t* byte_i = (uint8_t*)(u+limit);
-
-				for (size_t i = 0; i < tail; i++)
-				{
-					left_over <<= 8;
-					left_over += *byte_i++;
-				}
-			}
+				std::memcpy(&left_over,(uint8_t*)(u + limit),tail);
 
 			for (size_t i = 0; i < COUNT && i < limit; i++)
 				result[i] = IV[i] ^ u[i];
 
+			for (size_t i = 0; i + COUNT < limit; i++)
 			{
-				size_t i = 0;
-				for (; i + COUNT < limit; i++)
-				{
-					auto head = result[0];
-					for (size_t j = 0; j < COUNT-1; j++)
-						result[j] = head * poly[j] + result[j + 1];
+				auto head = result[0];
+				for (size_t j = 0; j < COUNT-1; j++)
+					result[j] = head * poly[j] + result[j + 1];
 
-					result[COUNT - 1] = head * poly[COUNT - 1] + u[i + COUNT];
-				}
-
-				if (tail)
-					limit++;
-
-				for (; i < limit; i++)
-				{
-					auto head = result[0];
-
-					for (size_t j = 0; j < COUNT - 1; j++)
-						result[j] = head * poly[j] + result[j + 1];
-
-					result[COUNT - 1] = head * poly[COUNT - 1] + ((i + COUNT < limit) ? u[i + COUNT] : left_over);
-				}
+				result[COUNT - 1] = head * poly[COUNT - 1] + u[i + COUNT];
 			}
 
-			return result;
+			for (size_t i = 0; i < COUNT; i++)
+			{
+				auto head = result[0];
+
+				for (size_t j = 0; j < COUNT - 1; j++)
+					result[j] = head * poly[j] + result[j + 1];
+
+				result[COUNT - 1] = head * poly[COUNT - 1] + left_over;
+			}
 		}
 
 		/*
@@ -274,18 +256,9 @@ namespace template_hash
 			UNIT left_over = 0;
 
 			if (tail)
-			{
-				uint8_t* byte_i = (uint8_t*)(u + limit - COUNT);
+				std::memcpy(&left_over, (uint8_t*)(u + limit - COUNT), tail);
 
-				for (size_t i = 0; i < tail; i++)
-				{
-					left_over <<= 8;
-					left_over += *byte_i++;
-				}
-			}
-
-			size_t i = 0;
-			for (; i + COUNT < limit; i++)
+			for (size_t i = 0; i + COUNT < limit; i++)
 			{
 				auto head = context[0];
 				for (size_t j = 0; j < COUNT - 1; j++)
@@ -294,17 +267,14 @@ namespace template_hash
 				context[COUNT - 1] = head * poly[COUNT - 1] + u[i];
 			}
 
-			if (tail)
-				limit++;
-
-			for (; i < limit; i++)
+			for (size_t i = 0; i < COUNT; i++)
 			{
 				auto head = context[0];
 
 				for (size_t j = 0; j < COUNT - 1; j++)
 					context[j] = head * poly[j] + context[j + 1];
 
-				context[COUNT - 1] = head * poly[COUNT - 1] + ((i + COUNT < limit) ? u[i] : left_over);
+				context[COUNT - 1] = head * poly[COUNT - 1] + left_over;
 			}
 		}
 	}

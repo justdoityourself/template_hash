@@ -4,7 +4,9 @@
 
 #include "polynomial.hpp"
 
-#include "scalar_t/int.hpp"
+//#include "scalar_t/int.hpp"
+#include "avx2_int.hpp"
+#include "sse_int.hpp"
 
 namespace template_hash
 {
@@ -19,11 +21,22 @@ namespace template_hash
             Leaving them as a macro did not see the same drop... IDK why but this is what I measured.
         */
 
-        #define th_8_32_1(X) template_hash::polynomial::_general_hash<uint64_t>(X, std::array<uint64_t, 4> { 8312461053245862996, 2062925084401512419, 8347604128837450101, 4884635396288653628 }, std::array<uint64_t, 4> { 6287624849880064552, 7342089213514467324, 2167580547557054533, 8553349112118993147 })
+        #define thx_32_64_1(X,O) template_hash::polynomial::_general_hash<avx2_int::xint256_t>(X, std::array<avx2_int::xint256_t, 2> { 2062925084401512419, 8347604128837450101}, O, std::array<avx2_int::xint256_t, 2> { 2167580547557054533, 8553349112118993147 })
 
-        #define th_8_16_1(X) template_hash::polynomial::_general_hash<uint64_t>(X, std::array<uint64_t, 2> { 8312461053245862996, 2062925084401512419 }, std::array<uint64_t, 2> { 6287624849880064552, 7342089213514467324 })
+        #define thx_16_32_1(X,O) template_hash::polynomial::_general_hash<sse_int::xint128_t>(X, std::array<sse_int::xint128_t, 2> { 8312461053245862996, 2062925084401512419 }, O, std::array<sse_int::xint128_t, 2> { 6287624849880064552, 7342089213514467323 })
+        #define thx_16_32_1_begin(X,C) template_hash::polynomial::general_hash_begin<sse_int::xint128_t>(C,X, std::array<sse_int::xint128_t, 2> { 8312461053245862996, 2062925084401512419 }, std::array<sse_int::xint128_t, 2> { 6287624849880064552, 7342089213514467323 })
+        #define thx_16_32_1_update(X,C) template_hash::polynomial::general_hash_continue<sse_int::xint128_t>(C,X, std::array<sse_int::xint128_t, 2> { 8312461053245862996, 2062925084401512419 })
+        #define thx_16_32_1_finish(X,C) template_hash::polynomial::general_hash_finish<sse_int::xint128_t>(C,X, std::array<sse_int::xint128_t, 2> { 8312461053245862996, 2062925084401512419 })
 
-        template < typename T > auto th_16_32_1(const T& data)
+
+        #define th_8_32_1(X,O) template_hash::polynomial::_general_hash<uint64_t>(X, std::array<uint64_t, 4> { 8312461053245862996, 2062925084401512419, 8347604128837450101, 4884635396288653628 }, O, std::array<uint64_t, 4> { 6287624849880064552, 7342089213514467324, 2167580547557054533, 8553349112118993147 })
+        #define th_8_32_1_begin(X,C) template_hash::polynomial::general_hash_begin<uint64_t>(C,X, std::array<uint64_t, 4> { 8312461053245862996, 2062925084401512419, 8347604128837450101, 4884635396288653628 }, std::array<uint64_t, 4> { 6287624849880064552, 7342089213514467324, 2167580547557054533, 8553349112118993147 })
+        #define th_8_32_1_update(X,C) template_hash::polynomial::general_hash_continue<uint64_t>(C,X, std::array<uint64_t, 4> { 8312461053245862996, 2062925084401512419, 8347604128837450101, 4884635396288653628 })
+        #define th_8_32_1_finish(X,C) template_hash::polynomial::general_hash_finish<uint64_t>(C,X, std::array<uint64_t, 4> { 8312461053245862996, 2062925084401512419, 8347604128837450101, 4884635396288653628 })
+
+        #define th_8_16_1(X,C) template_hash::polynomial::_general_hash<uint64_t>(X, std::array<uint64_t, 2> { 8312461053245862996, 2062925084401512419 }, C, std::array<uint64_t, 2> { 6287624849880064552, 7342089213514467324 })
+
+        /*template < typename T > auto th_16_32_1(const T& data)
         {
             using ii = scalar_t::uintv_t<uint64_t, 2>;
 
@@ -48,6 +61,6 @@ namespace template_hash
                                                         ii(2167580547557054533,8553349112118993147,7407326397308717619,1022658224357599207) };
 
             return polynomial::_general_hash<ii>(data, poly, iv);
-        }
+        }*/
 	}
 }
