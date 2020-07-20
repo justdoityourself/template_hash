@@ -4,6 +4,8 @@
 
 #include <array>
 
+#include "d8u/buffer.hpp"
+
 namespace template_hash
 {
 	namespace polynomial
@@ -38,13 +40,15 @@ namespace template_hash
 			TODO allow the context to be input so we can resume a blocked hashing process.
 		*/
 
-		template < typename UNIT, typename T, typename BLOCK, size_t COUNT > void _general_hash(const T& data, const std::array<BLOCK, COUNT>& poly, std::array<BLOCK, COUNT> & result,const std::array<BLOCK, COUNT>& IV = {})
+		template < typename UNIT, typename T, typename BLOCK, size_t COUNT > void _general_hash(const T& _data, const std::array<BLOCK, COUNT>& poly, std::array<BLOCK, COUNT> & result,const std::array<BLOCK, COUNT>& IV = {})
 		{
+			auto data = d8u::byte_buffer(_data);
+
 			UNIT* u = (UNIT*)data.data();
 			size_t limit = data.size() / sizeof(UNIT);
 			size_t tail = data.size() % sizeof(UNIT);
 
-			UNIT left_over = 0;
+			UNIT left_over(900000003017);
 
 			if (tail)
 				std::memcpy(&left_over,(uint8_t*)(u + limit),tail);
@@ -204,8 +208,10 @@ namespace template_hash
 			The first block must also have UNIT * COUNT bytes to create the context.
 		*/
 
-		template < typename UNIT, typename BLOCK, typename T, size_t COUNT > auto general_hash_begin(std::array<BLOCK, COUNT> & context,const T& data, const std::array<BLOCK, COUNT>& poly, const std::array<BLOCK, COUNT>& IV = {})
+		template < typename UNIT, typename BLOCK, typename T, size_t COUNT > auto general_hash_begin(std::array<BLOCK, COUNT> & context,const T& _data, const std::array<BLOCK, COUNT>& poly, const std::array<BLOCK, COUNT>& IV = {})
 		{
+			auto data = d8u::byte_buffer(_data);
+
 			UNIT* u = (UNIT*)data.data();
 			size_t limit = data.size() / sizeof(UNIT);
 
@@ -228,8 +234,10 @@ namespace template_hash
 			}
 		}
 
-		template < typename UNIT, typename BLOCK, typename T, size_t COUNT > auto general_hash_continue(std::array<BLOCK, COUNT>& context, const T& data, const std::array<BLOCK, COUNT>& poly)
+		template < typename UNIT, typename BLOCK, typename T, size_t COUNT > auto general_hash_continue(std::array<BLOCK, COUNT>& context, const T& _data, const std::array<BLOCK, COUNT>& poly)
 		{
+			auto data = d8u::byte_buffer(_data);
+
 			UNIT* u = (UNIT*)data.data();
 			size_t limit = data.size() / sizeof(UNIT) + COUNT;
 			
@@ -247,13 +255,15 @@ namespace template_hash
 			}
 		}
 
-		template < typename UNIT, typename BLOCK, typename T, size_t COUNT > auto general_hash_finish(std::array<BLOCK, COUNT>& context, const T& data, const std::array<BLOCK, COUNT>& poly)
+		template < typename UNIT, typename BLOCK, typename T, size_t COUNT > auto general_hash_finish(std::array<BLOCK, COUNT>& context, const T& _data, const std::array<BLOCK, COUNT>& poly)
 		{
+			auto data = d8u::byte_buffer(_data);
+
 			UNIT* u = (UNIT*)data.data();
 			size_t limit = data.size() / sizeof(UNIT) + COUNT;
 			size_t tail = data.size() % sizeof(UNIT);
 
-			UNIT left_over = 0;
+			UNIT left_over(900000003017);
 
 			if (tail)
 				std::memcpy(&left_over, (uint8_t*)(u + limit - COUNT), tail);
