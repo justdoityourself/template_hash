@@ -4,6 +4,8 @@
 
 #include <immintrin.h>
 
+#include "scalar_t/int.hpp"
+
 namespace sse_int
 {
 	/*
