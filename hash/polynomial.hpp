@@ -5,6 +5,7 @@
 #include <array>
 
 #include "d8u/buffer.hpp"
+#include "d8u/string.hpp"
 
 namespace template_hash
 {
@@ -48,13 +49,19 @@ namespace template_hash
 			size_t limit = data.size() / sizeof(UNIT);
 			size_t tail = data.size() % sizeof(UNIT);
 
-			UNIT left_over(900000003017);
+			UNIT left_over(7764590573423603017);
 
 			if (tail)
 				std::memcpy(&left_over,(uint8_t*)(u + limit),tail);
 
+			for (size_t i = 0; i < COUNT; i++)
+				result[i] = IV[i];
+
 			for (size_t i = 0; i < COUNT && i < limit; i++)
-				result[i] = IV[i] ^ u[i];
+				result[i] ^= u[i];
+
+			for (size_t i = limit; i < COUNT; i++)
+				result[i] ^= left_over;
 
 			for (size_t i = 0; i + COUNT < limit; i++)
 			{
@@ -190,16 +197,18 @@ namespace template_hash
 			This function finalizes the hash into a single block. Returning that result.
 		*/
 
-		template < typename UNIT, typename BLOCK, typename T, size_t COUNT  > BLOCK general_hash(const T& data, const std::array<BLOCK, COUNT>& poly, const std::array<BLOCK, COUNT>& IV = {})
+		/*template < typename UNIT, typename BLOCK, typename T, size_t COUNT  > BLOCK general_hash(const T& data, const std::array<BLOCK, COUNT>& poly, const std::array<BLOCK, COUNT>& IV = {})
 		{
 			BLOCK result = 0;
-			auto context = _general_hash<UNIT, BLOCK>(data, poly,IV);
+
+			std::array<BLOCK, COUNT> context;
+			_general_hash<UNIT, BLOCK>(data, poly,context,IV);
 
 			for (auto& i : context)
 				result ^= i;
 
 			return result;
-		}
+		}*/
 
 
 
@@ -263,7 +272,7 @@ namespace template_hash
 			size_t limit = data.size() / sizeof(UNIT) + COUNT;
 			size_t tail = data.size() % sizeof(UNIT);
 
-			UNIT left_over(900000003017);
+			UNIT left_over(7764590573423603017);
 
 			if (tail)
 				std::memcpy(&left_over, (uint8_t*)(u + limit - COUNT), tail);
