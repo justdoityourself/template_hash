@@ -194,21 +194,21 @@ namespace template_hash
 
 
 		/*
-			This function finalizes the hash into a single block. Returning that result.
+			This function finalizes the hash into a single block, if that is what you want. Returning that result.
 		*/
 
-		/*template < typename UNIT, typename BLOCK, typename T, size_t COUNT  > BLOCK general_hash(const T& data, const std::array<BLOCK, COUNT>& poly, const std::array<BLOCK, COUNT>& IV = {})
+		template < typename UNIT, typename BLOCK, typename T, size_t COUNT  > BLOCK general_hash(const T& data, const std::array<BLOCK, COUNT>& poly, const std::array<BLOCK, COUNT>& IV = {})
 		{
 			BLOCK result = 0;
 
 			std::array<BLOCK, COUNT> context;
-			_general_hash<UNIT, BLOCK>(data, poly,context,IV);
+			_general_hash<UNIT>(data, poly,context,IV);
 
 			for (auto& i : context)
 				result ^= i;
 
 			return result;
-		}*/
+		}
 
 
 
