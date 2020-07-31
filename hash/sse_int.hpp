@@ -117,16 +117,16 @@ namespace sse_int
 			return (uint32_t)scalar_t::uintv_t<uint32_t, 1>(data.m128i_u32[0]).MultiplicativeInverse()[0];
 		}
 
-		pint128_t() { }
+		constexpr pint128_t() { }
 
 		void Zero()
 		{
 			std::memset(this, 0, sizeof(pint128_t));
 		}
 
-		pint128_t(uint32_t ox) : pint128_t(ox, ox,ox,ox) {}
+		constexpr pint128_t(uint32_t ox) : pint128_t(ox, ox,ox,ox) {}
 
-		pint128_t(uint32_t o1, uint32_t o2, uint32_t o3, uint32_t o4)
+		constexpr pint128_t(uint32_t o1, uint32_t o2, uint32_t o3, uint32_t o4)
 		{
 			uint32_t* p = (uint32_t*)this;
 			p[0] = o1;
