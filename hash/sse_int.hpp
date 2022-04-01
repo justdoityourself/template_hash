@@ -106,7 +106,101 @@ namespace sse_int
 		__m128i data;
 	};
 
-	static_assert(sizeof(xint128_t) == 16);
+	class alignas(16) compat_xint128_t
+	{
+	public:
+
+		compat_xint128_t() { }
+
+		void Zero()
+		{
+			std::memset(this, 0, sizeof(compat_xint128_t));
+		}
+
+		compat_xint128_t(uint64_t ox) : compat_xint128_t(ox, ox) {}
+
+		compat_xint128_t(uint64_t o1, uint64_t o2)
+		{
+			uint64_t* p = (uint64_t*)this;
+			p[0] = o1;
+			p[1] = o2;
+		}
+
+		compat_xint128_t operator * (const compat_xint128_t& r) const
+		{
+			compat_xint128_t result;
+
+			result.data = _mm_mullo_epi32(data, r.data);
+
+			return result;
+		}
+
+		compat_xint128_t& operator *= (const compat_xint128_t& r)
+		{
+			data = _mm_mullo_epi32(data, r.data);
+
+			return *this;
+		}
+
+		compat_xint128_t operator + (const compat_xint128_t& r) const
+		{
+			compat_xint128_t result;
+
+			result.data = _mm_add_epi64(data, r.data);
+
+			return result;
+		}
+
+		compat_xint128_t& operator += (const compat_xint128_t& r)
+		{
+			data = _mm_add_epi64(data, r.data);
+
+			return *this;
+		}
+
+		compat_xint128_t operator - (const compat_xint128_t& r) const
+		{
+			compat_xint128_t result;
+
+			result.data = _mm_sub_epi64(data, r.data);
+
+			return result;
+		}
+
+		compat_xint128_t& operator -= (const compat_xint128_t& r)
+		{
+			data = _mm_sub_epi64(data, r.data);
+
+			return *this;
+		}
+
+		compat_xint128_t operator ^ (const compat_xint128_t& r) const
+		{
+			compat_xint128_t result;
+
+			result.data = _mm_xor_si128(data, r.data);
+
+			return result;
+		}
+
+		compat_xint128_t& operator ^= (const compat_xint128_t& r)
+		{
+			data = _mm_xor_si128(data, r.data);
+
+			return *this;
+		}
+
+		compat_xint128_t& operator = (const compat_xint128_t& r)
+		{
+			data = r.data;
+
+			return *this;
+		}
+
+		__m128i data;
+	};
+
+	static_assert(sizeof(compat_xint128_t) == 16);
 
 	class alignas(16) pint128_t
 	{
